@@ -1,5 +1,5 @@
 import { Dialect, Sequelize } from "sequelize";
-import { envs } from "./envs";
+import { envs } from "../../config/envs";
 
 const sequelize = new Sequelize(
   envs.DB_NAME!,

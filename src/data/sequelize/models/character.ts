@@ -1,8 +1,9 @@
 import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import sequelize from "../database";
 
 interface CharacterAttributes {
   id: number;
+  orginal_id: number;
   name: string;
   status: string;
   species: string;
@@ -17,6 +18,7 @@ class Character
   implements CharacterAttributes
 {
   public id!: number;
+  public orginal_id!: number;
   public name!: string;
   public status!: string;
   public species!: string;
@@ -32,6 +34,10 @@ Character.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+    },
+    orginal_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     name: {
       type: DataTypes.STRING,

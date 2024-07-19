@@ -1,5 +1,6 @@
 import axios from "axios";
-import Character from "../models/character";
+import Character from "../../data/sequelize/models/character";
+import { RickAndMortyCharacter } from "../../domain/interfaces/rick-morty-character";
 
 const populateDatabase = async () => {
   const characterCount = await Character.count();
@@ -9,11 +10,14 @@ const populateDatabase = async () => {
     return;
   }
 
-  const { data } = await axios.get("https://rickandmortyapi.com/api/character");
+  const { data } = await axios.get<{ results: RickAndMortyCharacter[] }>(
+    "https://rickandmortyapi.com/api/character"
+  );
   const characters = data.results.slice(0, 15);
 
   await Character.bulkCreate(
-    characters.map((character: any) => ({
+    characters.map((character: RickAndMortyCharacter) => ({
+      orginal_id: character.id,
       name: character.name,
       status: character.status,
       species: character.species,

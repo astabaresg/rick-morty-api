@@ -1,49 +1,33 @@
-import express from "express";
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
-import { json } from "body-parser";
-import { createConnection } from "./config/database";
-import populateDatabase from "./services/populate";
+import { envs } from "./config/envs";
 import redisClient from "./config/redis";
-import schema from "./schemas";
-import requestLogger from "./middlewware/logger";
+import { createConnection } from "./data/sequelize/database";
+import populateDatabase from "./infraestructure/services/populate";
+import { Server } from "./presentation/server";
 
-const app = express();
-const PORT = process.env.PORT || 4000;
+(async () => {
+  main();
+})();
 
-const server = new ApolloServer({ schema });
-
-// Start the Apollo server
-async function startServer() {
-  await server.start();
-
-  // Use the body-parser middleware
-  app.use(json());
-
-  //* Add request logger middleware
-  app.use(requestLogger);
-
-  app.use("/graphql", json(), expressMiddleware(server));
-
-  app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/graphql`);
+async function main() {
+  const server = new Server({
+    port: envs.PORT,
   });
+
+  server.start();
+
+  // Establish database connection
+  createConnection().then(async () => {
+    // Populate initial data if needed
+    await populateDatabase();
+  });
+
+  // Connect to Redis
+  redisClient
+    .connect()
+    .then(() => {
+      console.log("Connected to Redis");
+    })
+    .catch((err) => {
+      console.error("Redis connection error:", err);
+    });
 }
-
-startServer();
-
-// Establish database connection
-createConnection().then(async () => {
-  // Populate initial data if needed
-  await populateDatabase();
-});
-
-// Connect to Redis
-redisClient
-  .connect()
-  .then(() => {
-    console.log("Connected to Redis");
-  })
-  .catch((err) => {
-    console.error("Redis connection error:", err);
-  });
