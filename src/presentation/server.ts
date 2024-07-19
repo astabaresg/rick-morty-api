@@ -4,6 +4,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { json } from "body-parser";
 import requestLogger from "../infraestructure/middlewware/logger";
 import schema from "../infraestructure/schemas";
+import logger from "../config/logger";
 
 interface Options {
   port: number;
@@ -27,7 +28,7 @@ export class Server {
     this.app.use("/graphql", json(), expressMiddleware(this.server));
 
     this.app.listen(this.port, () => {
-      console.log(`Server running at http://localhost:${this.port}/graphql`);
+      logger.info(`Server running at http://localhost:${this.port}/graphql`);
     });
   }
 }

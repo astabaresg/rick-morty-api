@@ -1,5 +1,6 @@
 import { Dialect, Sequelize } from "sequelize";
 import { envs } from "../../config/envs";
+import logger from "../../config/logger";
 
 const sequelize = new Sequelize(
   envs.DB_NAME!,
@@ -8,6 +9,7 @@ const sequelize = new Sequelize(
   {
     host: envs.DB_HOST,
     dialect: "postgres" as Dialect,
+    logging: false,
   }
 );
 
@@ -15,11 +17,11 @@ export const createConnection = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
-    console.log(
+    logger.info(
       "Connection to the database has been established successfully."
     );
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    logger.error("Unable to connect to the database:", error);
   }
 };
 

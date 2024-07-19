@@ -1,4 +1,5 @@
 import { envs } from "./config/envs";
+import logger from "./config/logger";
 import redisClient from "./config/redis";
 import { createConnection } from "./data/sequelize/database";
 import populateDatabase from "./infraestructure/services/populate";
@@ -25,9 +26,9 @@ async function main() {
   redisClient
     .connect()
     .then(() => {
-      console.log("Connected to Redis");
+      logger.info("Connected to Redis");
     })
     .catch((err) => {
-      console.error("Redis connection error:", err);
+      logger.error("Redis connection error:", err);
     });
 }

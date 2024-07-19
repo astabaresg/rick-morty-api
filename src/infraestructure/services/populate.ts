@@ -1,12 +1,13 @@
 import axios from "axios";
 import Character from "../../data/sequelize/models/character";
 import { RickAndMortyCharacter } from "../../domain/interfaces/rick-morty-character";
+import logger from "../../config/logger";
 
 const populateDatabase = async () => {
   const characterCount = await Character.count();
 
   if (characterCount > 0) {
-    console.log("Database already populated with characters");
+    logger.info("Database already populated with characters");
     return;
   }
 
@@ -27,7 +28,7 @@ const populateDatabase = async () => {
     { ignoreDuplicates: true }
   );
 
-  console.log("Database populated with initial characters");
+  logger.info("Database populated with characters");
 };
 
 export default populateDatabase;
