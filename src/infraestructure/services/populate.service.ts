@@ -1,7 +1,7 @@
-import axios from "axios";
 import Character from "../../data/sequelize/models/character";
 import { RickAndMortyCharacter } from "../../domain/interfaces/rick-morty-character";
 import logger from "../../config/logger";
+import { getCharacters } from "./rickandmortyapi.service";
 
 const populateDatabase = async () => {
   const characterCount = await Character.count();
@@ -11,10 +11,11 @@ const populateDatabase = async () => {
     return;
   }
 
-  const { data } = await axios.get<{ results: RickAndMortyCharacter[] }>(
-    "https://rickandmortyapi.com/api/character"
+  // const characters = data.results.slice(0, 15);
+  const characters: RickAndMortyCharacter[] = (await getCharacters({})).splice(
+    0,
+    15
   );
-  const characters = data.results.slice(0, 15);
 
   await Character.bulkCreate(
     characters.map((character: RickAndMortyCharacter) => ({

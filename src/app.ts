@@ -2,8 +2,9 @@ import { envs } from "./config/envs";
 import logger from "./config/logger";
 import redisClient from "./config/redis";
 import { createConnection } from "./data/sequelize/database";
-import populateDatabase from "./infraestructure/services/populate";
+import populateDatabase from "./infraestructure/services/populate.service";
 import { Server } from "./presentation/server";
+import "./infraestructure/cron/update-characters.cron";
 
 (async () => {
   main();
