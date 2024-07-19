@@ -3,3 +3,4 @@ dist/
 postgres/
 .env
 package-lock.json
+*.log

@@ -1,10 +1,12 @@
 import axios from "axios";
 import redisClient from "../config/redis";
 import Character from "../models/character";
+import { logExecutionTime } from "../decorators/log-execution-time.decorator";
 
 const time: number = 10; // Time in seconds
 
-export const QueryResolvers = {
+export class QueryResolvers {
+  @logExecutionTime
   async characters(_: any, args: any) {
     const cacheKey = `characters:${JSON.stringify(args)}`;
     const cachedCharacters = await redisClient.get(cacheKey);
@@ -48,9 +50,9 @@ export const QueryResolvers = {
     }
 
     return [];
-  },
-};
+  }
+}
 
 export const resolvers = {
-  Query: QueryResolvers,
+  Query: new QueryResolvers(),
 };

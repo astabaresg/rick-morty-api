@@ -6,6 +6,7 @@ import { createConnection } from "./config/database";
 import populateDatabase from "./services/populate";
 import redisClient from "./config/redis";
 import schema from "./schemas";
+import requestLogger from "./middlewware/logger";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,6 +16,13 @@ const server = new ApolloServer({ schema });
 // Start the Apollo server
 async function startServer() {
   await server.start();
+
+  // Use the body-parser middleware
+  app.use(json());
+
+  //* Add request logger middleware
+  app.use(requestLogger);
+
   app.use("/graphql", json(), expressMiddleware(server));
 
   app.listen(PORT, () => {
