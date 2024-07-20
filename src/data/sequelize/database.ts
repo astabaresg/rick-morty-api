@@ -25,4 +25,13 @@ export const createConnection = async () => {
   }
 };
 
+export const closeConnection = async () => {
+  try {
+    await sequelize.close();
+    logger.info("Connection to the database has been closed successfully.");
+  } catch (error) {
+    logger.error("Unable to close the database connection:", error);
+  }
+};
+
 export default sequelize;
