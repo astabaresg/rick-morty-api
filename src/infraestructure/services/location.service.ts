@@ -5,6 +5,9 @@ import {
   RickAndMortyLocationDTO,
 } from "../../domain/interfaces/rick-morty-character";
 
+/**
+ * Seeds the locations with an unknown location if it doesn't exist already.
+ */
 export const seedLocations = async () => {
   const unknownLocation = {
     original_id: null,
@@ -19,6 +22,11 @@ export const seedLocations = async () => {
   });
 };
 
+/**
+ * Finds or creates a location based on the provided RickAndMortyLocation object.
+ * @param location - The RickAndMortyLocation object containing the location details.
+ * @returns A Promise that resolves to the created or existing Location object, or null if no location is found.
+ */
 export const findOrCreateLocation = async (
   location: RickAndMortyLocation
 ): Promise<Location | null> => {

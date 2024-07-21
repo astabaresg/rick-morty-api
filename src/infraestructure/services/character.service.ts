@@ -4,6 +4,10 @@ import Character from "../../data/sequelize/models/character";
 import { RickAndMortyCharacter } from "../../domain/interfaces/rick-morty-character";
 import { fetchCharactersByIds } from "./rickandmortyapi.service";
 
+/**
+ * Updates characters in the database based on the latest data from the Rick and Morty API.
+ * @returns A Promise that resolves to void.
+ */
 export const updateCharactersInDatabase = async (): Promise<void> => {
   logger.info("Running the character update job");
 
@@ -32,6 +36,7 @@ export const updateCharactersInDatabase = async (): Promise<void> => {
         origin: { name: originName },
       } = character;
 
+      // Update the character if any of the fields have changed
       if (
         characterToUpdate.name !== name ||
         characterToUpdate.status !== status ||
@@ -50,6 +55,7 @@ export const updateCharactersInDatabase = async (): Promise<void> => {
       }
     }
 
+    // Clear the cache after updating the characters
     await redisClient.flushDb();
 
     logger.info("Character update job finished");

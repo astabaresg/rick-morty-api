@@ -4,6 +4,12 @@ import logger from "../../config/logger";
 
 const baseUrl: string = "https://rickandmortyapi.com/api/character";
 
+/**
+ * Retrieves a list of Rick and Morty characters based on the provided arguments.
+ *
+ * @param args - The arguments to be passed to the API request.
+ * @returns A promise that resolves to an array of RickAndMortyCharacter objects.
+ */
 export const getCharacters = async (
   args: any
 ): Promise<RickAndMortyCharacter[]> => {
@@ -15,6 +21,11 @@ export const getCharacters = async (
   return data.results;
 };
 
+/**
+ * Fetches characters by their IDs from the Rick and Morty API.
+ * @param ids - An array of character IDs.
+ * @returns A promise that resolves to an array of RickAndMortyCharacter objects.
+ */
 export const fetchCharactersByIds = async (
   ids: number[]
 ): Promise<RickAndMortyCharacter[]> => {

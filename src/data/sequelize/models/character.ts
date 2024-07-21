@@ -7,6 +7,9 @@ import {
 import sequelize from "../database";
 import Location from "./location";
 
+/**
+ * Represents the attributes of a character.
+ */
 interface CharacterAttributes {
   id: number;
   original_id: number;
@@ -23,6 +26,9 @@ type CharacterCreationAttributes = Optional<
   "id" | "originId" | "locationId"
 >;
 
+/**
+ * Represents a character in the Rick and Morty API.
+ */
 class Character
   extends Model<CharacterAttributes, CharacterCreationAttributes>
   implements CharacterAttributes

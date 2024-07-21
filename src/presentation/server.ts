@@ -10,15 +10,36 @@ interface Options {
   port: number;
 }
 
+/**
+ * Represents a server that handles HTTP requests and starts an Apollo Server.
+ */
 export class Server {
+  /**
+   * The Express application instance.
+   */
   public readonly app = express();
+
+  /**
+   * The port number on which the server listens for incoming requests.
+   */
   private readonly port: number;
+
+  /**
+   * The Apollo Server instance.
+   */
   public readonly server: ApolloServer = new ApolloServer({ schema });
 
+  /**
+   * Creates a new Server instance.
+   * @param options - The options for configuring the server.
+   */
   constructor(options: Options) {
     this.port = options.port;
   }
 
+  /**
+   * Starts the server and listens for incoming requests.
+   */
   async start() {
     await this.server.start();
 

@@ -1,5 +1,8 @@
 import { createLogger, format, transports } from "winston";
 
+/**
+ * The logger instance for logging application events with winston.
+ */
 const logger = createLogger({
   level: "info",
   format: format.combine(

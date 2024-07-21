@@ -9,7 +9,16 @@ import { getCharacters } from "../services/rickandmortyapi.service";
 
 const time: number = 10; // Time in seconds
 
+/**
+ * Resolver class for handling queries related to characters.
+ */
 export class QueryResolvers {
+  /**
+   * Retrieves characters based on the provided arguments.
+   * @param _ The parent object, which is not used in this resolver.
+   * @param args The arguments passed to the resolver, including filters for name, status, species, gender, and origin.
+   * @returns A promise that resolves to an array of characters matching the provided filters.
+   */
   @logExecutionTime
   async characters(_: any, args: any): Promise<Character[]> {
     const cacheKey = `characters:${JSON.stringify(args)}`;
@@ -17,6 +26,7 @@ export class QueryResolvers {
 
     const { name, status, species, gender, origin } = args;
 
+    // Return cached characters if found
     if (cachedCharacters) {
       return JSON.parse(cachedCharacters);
     }
@@ -41,6 +51,7 @@ export class QueryResolvers {
       locationWhereClause.name = { [Op.iLike]: `%${origin}%` };
     }
 
+    // Find characters in the local DB
     const characters = await Character.findAll({
       where: characterWhereClause,
       include: [
@@ -54,7 +65,9 @@ export class QueryResolvers {
       order: [["id", "ASC"]],
     });
 
+    // Return characters if found in local DB
     if (characters.length > 0) {
+      // Cache the characters
       await redisClient.set(cacheKey, JSON.stringify(characters), {
         EX: time, // Expire time in seconds
       });
@@ -62,10 +75,9 @@ export class QueryResolvers {
     }
 
     // Fetch from Rick and Morty API if not found in local DB
-
     const apiCharacters: RickAndMortyCharacter[] = await getCharacters(args);
-
     if (apiCharacters.length > 0) {
+      // Create new characters in the local DB
       const newCharacters = await Promise.all(
         apiCharacters.map(async (character: RickAndMortyCharacter) => {
           const origin = await findOrCreateLocation(character.origin);
@@ -83,6 +95,7 @@ export class QueryResolvers {
         })
       );
 
+      // Bulk create the new characters
       const charactersToReturn = await Character.bulkCreate(newCharacters);
 
       await redisClient.set(cacheKey, JSON.stringify(charactersToReturn), {

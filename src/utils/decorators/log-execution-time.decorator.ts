@@ -1,5 +1,12 @@
 import logger from "../../config/logger";
 
+/**
+ * Decorator that logs the execution time of a method.
+ * @param target - The target object.
+ * @param propertyKey - The name of the method being decorated.
+ * @param descriptor - The property descriptor of the method being decorated.
+ * @returns The modified property descriptor.
+ */
 export function logExecutionTime(
   target: any,
   propertyKey: any,

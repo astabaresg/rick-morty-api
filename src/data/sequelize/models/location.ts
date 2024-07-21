@@ -11,6 +11,9 @@ interface LocationAttributes {
 
 type LocationCreationAttributes = Optional<LocationAttributes, "id">;
 
+/**
+ * Represents a location in the Rick and Morty API.
+ */
 class Location
   extends Model<LocationAttributes, LocationCreationAttributes>
   implements LocationAttributes

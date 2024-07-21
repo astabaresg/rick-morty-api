@@ -11,6 +11,11 @@ import { seedLocations } from "./infraestructure/services/location.service";
   main();
 })();
 
+/**
+ * The main function that starts the application.
+ * It initializes the server, establishes a database connection,
+ * populates initial data if needed, and connects to Redis.
+ */
 async function main() {
   const server = new Server({
     port: envs.PORT,

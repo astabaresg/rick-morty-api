@@ -5,6 +5,9 @@ import logger from "./logger";
 
 dotenv.config();
 
+/**
+ * Redis client instance.
+ */
 const redisClient = createClient({
   url: `redis://${envs.REDIS_HOST}:${envs.REDIS_PORT}`,
 });

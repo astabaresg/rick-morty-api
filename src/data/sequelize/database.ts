@@ -13,7 +13,11 @@ const sequelize = new Sequelize(
   }
 );
 
-export const createConnection = async () => {
+/**
+ * Creates a connection to the database.
+ * @returns {Promise<void>} A promise that resolves when the connection is established successfully.
+ */
+export const createConnection = async (): Promise<void> => {
   try {
     await sequelize.authenticate();
     await sequelize.sync();

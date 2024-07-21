@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../../config/logger";
 
+/**
+ * Middleware function to log incoming requests.
+ * @param req - The Express request object.
+ * @param res - The Express response object.
+ * @param next - The next middleware function.
+ */
 const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const { method, url } = req;
   const timeStamp = new Date().toISOString();

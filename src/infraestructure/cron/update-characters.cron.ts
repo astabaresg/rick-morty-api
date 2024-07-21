@@ -1,3 +1,7 @@
+/**
+ * Schedule a cron job to update characters in the database.
+ * The job runs every 12 hours.
+ */
 import cron from "node-cron";
 import logger from "../../config/logger";
 import { updateCharactersInDatabase } from "../services/character.service";

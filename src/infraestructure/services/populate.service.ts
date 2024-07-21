@@ -1,11 +1,13 @@
 import Character from "../../data/sequelize/models/character";
-import Location from "../../data/sequelize/models/location";
 import { RickAndMortyCharacter } from "../../domain/interfaces/rick-morty-character";
 import logger from "../../config/logger";
 import { getCharacters } from "./rickandmortyapi.service";
-import axios from "axios";
 import { findOrCreateLocation } from "./location.service";
 
+/**
+ * Populates the database with characters from the Rick and Morty API.
+ * If the database is already populated, the function returns early.
+ */
 const populateDatabase = async () => {
   const characterCount = await Character.count();
 
