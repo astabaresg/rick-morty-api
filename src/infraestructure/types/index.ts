@@ -1,13 +1,20 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
+  type Location {
+    id: ID!
+    name: String!
+    type: String
+    dimension: String
+  }
   type Character {
     id: ID!
     name: String!
     status: String
     species: String
     gender: String
-    origin: String
+    origin: Location
+    location: Location
   }
 
   type Query {

@@ -14,13 +14,13 @@ export const updateCharactersInDatabase = async (): Promise<void> => {
       return;
     }
 
-    const ids: number[] = characters.map((character) => character.orginal_id);
+    const ids: number[] = characters.map((character) => character.original_id);
     const charactersUpdated: RickAndMortyCharacter[] =
       await fetchCharactersByIds(ids);
 
     for (const character of charactersUpdated) {
       const characterToUpdate = characters.find(
-        (c) => c.orginal_id === character.id
+        (c) => c.original_id === character.id
       );
       if (!characterToUpdate) continue;
 
@@ -36,8 +36,7 @@ export const updateCharactersInDatabase = async (): Promise<void> => {
         characterToUpdate.name !== name ||
         characterToUpdate.status !== status ||
         characterToUpdate.species !== species ||
-        characterToUpdate.gender !== gender ||
-        characterToUpdate.origin !== originName
+        characterToUpdate.gender !== gender
       ) {
         await Character.update(
           {
@@ -45,9 +44,8 @@ export const updateCharactersInDatabase = async (): Promise<void> => {
             status,
             species,
             gender,
-            origin: originName,
           },
-          { where: { orginal_id: character.id } }
+          { where: { original_id: character.id } }
         );
       }
     }

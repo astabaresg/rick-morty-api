@@ -1,10 +1,10 @@
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
+import { Op } from "sequelize";
 import redisClient from "../src/config/redis";
 import Character from "../src/data/sequelize/models/character";
 import { QueryResolvers } from "../src/infraestructure/resolvers/query";
-
-const mock = new MockAdapter(axios);
+import Location from "../src/data/sequelize/models/location";
+import { getCharacters } from "../src/infraestructure/services/rickandmortyapi.service";
+import { findOrCreateLocation } from "../src/infraestructure/services/location.service";
 
 // Mock Redis methods
 jest.mock("../src/config/redis", () => ({
@@ -15,6 +15,14 @@ jest.mock("../src/config/redis", () => ({
 jest.mock("../src/data/sequelize/models/character", () => ({
   findAll: jest.fn(),
   bulkCreate: jest.fn(),
+}));
+
+jest.mock("../src/infraestructure/services/rickandmortyapi.service", () => ({
+  getCharacters: jest.fn(),
+}));
+
+jest.mock("../src/infraestructure/services/location.service", () => ({
+  findOrCreateLocation: jest.fn(),
 }));
 
 describe("Character Search Query", () => {
@@ -41,7 +49,9 @@ describe("Character Search Query", () => {
 
   it("should return characters from the database if not in cache", async () => {
     // Arrange
-    const dbCharacters = [{ name: "Morty" }];
+    const dbCharacters = [
+      { name: "Morty", origin: { name: "Earth" }, location: { name: "Earth" } },
+    ];
     (redisClient.get as jest.Mock).mockResolvedValue(null);
     (Character.findAll as jest.Mock).mockResolvedValue(dbCharacters);
     (redisClient.set as jest.Mock).mockResolvedValue("OK");
@@ -54,7 +64,16 @@ describe("Character Search Query", () => {
     // Assert
     expect(redisClient.get).toHaveBeenCalledWith('characters:{"name":"Morty"}');
     expect(Character.findAll).toHaveBeenCalledWith({
-      where: { name: "Morty" },
+      where: { name: { [Op.iLike]: "%Morty%" } },
+      include: [
+        {
+          model: Location,
+          as: "origin",
+          where: {},
+        },
+        { model: Location, as: "location" },
+      ],
+      order: [["id", "ASC"]],
     });
     expect(redisClient.set).toHaveBeenCalledWith(
       'characters:{"name":"Morty"}',
@@ -73,16 +92,23 @@ describe("Character Search Query", () => {
         status: "Alive",
         species: "Human",
         gender: "Female",
-        origin: { name: "Earth" },
+        origin: {
+          name: "Earth",
+          url: "https://rickandmortyapi.com/api/location/1",
+        },
+        location: {
+          name: "Earth",
+          url: "https://rickandmortyapi.com/api/location/1",
+        },
       },
     ];
     (redisClient.get as jest.Mock).mockResolvedValue(null);
     (Character.findAll as jest.Mock).mockResolvedValue([]);
-    mock
-      .onGet("https://rickandmortyapi.com/api/character", {
-        params: { name: "Summer" },
-      })
-      .reply(200, { results: apiCharacters });
+    (findOrCreateLocation as jest.Mock).mockResolvedValue({
+      id: 1,
+      name: "Earth",
+    });
+    (getCharacters as jest.Mock).mockResolvedValue(apiCharacters);
     (Character.bulkCreate as jest.Mock).mockResolvedValue(apiCharacters);
     (redisClient.set as jest.Mock).mockResolvedValue("OK");
 
@@ -96,17 +122,29 @@ describe("Character Search Query", () => {
       'characters:{"name":"Summer"}'
     );
     expect(Character.findAll).toHaveBeenCalledWith({
-      where: { name: "Summer" },
+      where: { name: { [Op.iLike]: "%Summer%" } },
+      include: [
+        {
+          model: Location,
+          as: "origin",
+          where: {},
+        },
+        { model: Location, as: "location" },
+      ],
+      order: [["id", "ASC"]],
     });
-    expect(mock.history.get.length).toBe(1);
+
+    expect(getCharacters).toHaveBeenCalledTimes(1);
+    expect(findOrCreateLocation).toHaveBeenCalledTimes(2);
     expect(Character.bulkCreate).toHaveBeenCalledWith([
       {
-        orginal_id: 1,
+        original_id: 1,
         name: "Summer",
         status: "Alive",
         species: "Human",
         gender: "Female",
-        origin: "Earth",
+        originId: 1,
+        locationId: 1,
       },
     ]);
     expect(redisClient.set).toHaveBeenCalledWith(
@@ -121,11 +159,7 @@ describe("Character Search Query", () => {
     // Arrange
     (redisClient.get as jest.Mock).mockResolvedValue(null);
     (Character.findAll as jest.Mock).mockResolvedValue([]);
-    mock
-      .onGet("https://rickandmortyapi.com/api/character", {
-        params: { name: "NonExistentName" },
-      })
-      .reply(200, { results: [] });
+    (getCharacters as jest.Mock).mockResolvedValue([]);
 
     const resolver = new QueryResolvers();
 
@@ -137,8 +171,18 @@ describe("Character Search Query", () => {
       'characters:{"name":"NonExistentName"}'
     );
     expect(Character.findAll).toHaveBeenCalledWith({
-      where: { name: "NonExistentName" },
+      where: { name: { [Op.iLike]: "%NonExistentName%" } },
+      include: [
+        {
+          model: Location,
+          as: "origin",
+          where: {},
+        },
+        { model: Location, as: "location" },
+      ],
+      order: [["id", "ASC"]],
     });
+    expect(getCharacters).toHaveBeenCalledTimes(1);
     expect(result).toEqual([]);
   });
 });

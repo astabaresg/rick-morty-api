@@ -5,6 +5,7 @@ import { createConnection } from "./data/sequelize/database";
 import populateDatabase from "./infraestructure/services/populate.service";
 import { Server } from "./presentation/server";
 import "./infraestructure/cron/update-characters.cron";
+import { seedLocations } from "./infraestructure/services/location.service";
 
 (async () => {
   main();
@@ -20,6 +21,7 @@ async function main() {
   // Establish database connection
   createConnection().then(async () => {
     // Populate initial data if needed
+    await seedLocations();
     await populateDatabase();
   });
 

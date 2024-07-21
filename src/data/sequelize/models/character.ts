@@ -1,31 +1,46 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import {
+  DataTypes,
+  Model,
+  Optional,
+  BelongsToGetAssociationMixin,
+} from "sequelize";
 import sequelize from "../database";
+import Location from "./location";
 
 interface CharacterAttributes {
   id: number;
-  orginal_id: number;
+  original_id: number;
   name: string;
   status: string;
   species: string;
   gender: string;
-  origin: string;
+  originId: number | null;
+  locationId: number | null;
 }
 
-type CharacterCreationAttributes = Optional<CharacterAttributes, "id">;
+type CharacterCreationAttributes = Optional<
+  CharacterAttributes,
+  "id" | "originId" | "locationId"
+>;
 
 class Character
   extends Model<CharacterAttributes, CharacterCreationAttributes>
   implements CharacterAttributes
 {
   public id!: number;
-  public orginal_id!: number;
+  public original_id!: number;
   public name!: string;
   public status!: string;
   public species!: string;
   public gender!: string;
-  public origin!: string;
+  public originId!: number | null;
+  public locationId!: number | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // Association methods
+  public getOrigin!: BelongsToGetAssociationMixin<Location>;
+  public getLocation!: BelongsToGetAssociationMixin<Location>;
 }
 
 Character.init(
@@ -35,7 +50,7 @@ Character.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    orginal_id: {
+    original_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -52,8 +67,21 @@ Character.init(
     gender: {
       type: DataTypes.STRING,
     },
-    origin: {
-      type: DataTypes.STRING,
+    originId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Location,
+        key: "id",
+      },
+    },
+    locationId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Location,
+        key: "id",
+      },
     },
   },
   {
@@ -63,5 +91,9 @@ Character.init(
     timestamps: true,
   }
 );
+
+// Define associations
+Character.belongsTo(Location, { as: "origin", foreignKey: "originId" });
+Character.belongsTo(Location, { as: "location", foreignKey: "locationId" });
 
 export default Character;

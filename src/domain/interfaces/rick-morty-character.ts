@@ -5,15 +5,25 @@ export interface RickAndMortyCharacter {
   species: string;
   type: string;
   gender: string;
-  origin: Location;
-  location: Location;
+  origin: RickAndMortyLocation;
+  location: RickAndMortyLocation;
   image: string;
   episode: string[];
   url: string;
   created: Date;
 }
 
-export interface Location {
+export interface RickAndMortyLocation {
   name: string;
   url: string;
+}
+
+export interface RickAndMortyLocationDTO {
+  id: number;
+  name: string;
+  type: string;
+  dimension: string;
+  residents: string[];
+  url: string;
+  created: Date;
 }
