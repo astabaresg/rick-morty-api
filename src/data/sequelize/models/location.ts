@@ -49,7 +49,7 @@ Location.init(
   {
     sequelize,
     modelName: "location",
-    tableName: "location",
+    tableName: "Locations",
     timestamps: true,
   }
 );

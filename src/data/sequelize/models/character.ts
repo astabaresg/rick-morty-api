@@ -87,7 +87,7 @@ Character.init(
   {
     sequelize,
     modelName: "character",
-    tableName: "character",
+    tableName: "Characters",
     timestamps: true,
   }
 );

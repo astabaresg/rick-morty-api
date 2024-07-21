@@ -38,7 +38,7 @@ This project is an API that allows searching for characters from the "Rick and M
 
 - Node.js (v14 or higher)
 - Docker and Docker Compose (for running PostgreSQL and Redis)
-- NPM or Yarn
+- NPM
 
 ## Installation
 
@@ -60,6 +60,12 @@ npm install
 
 ```sh
 docker-compose up -d
+```
+
+5. Run database migrations to create the necessary tables:
+
+```sh
+npm run migrate
 ```
 
 ## Usage
